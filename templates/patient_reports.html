@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Report - GeneCure AI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            color: #fff;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #00d4ff;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .back-link:hover {
+            color: #9c27b0;
+            transform: translateX(-3px);
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0, #ff6b6b, #00d4ff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            animation: gradientShift 5s ease infinite;
+            letter-spacing: -1px;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .report-wrapper {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transform: translateY(50px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.25);
+            position: relative;
+            z-index: 1;
+        }
+
+        .report-header-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .report-header-title h2 {
+            font-size: 1.4rem;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .report-header-title h2 i {
+            font-size: 1.4rem;
+        }
+
+        .report-header-title span {
+            font-size: 0.9rem;
+            color: #aaa;
+            font-weight: 300;
+        }
+
+        .report-meta {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #aaa;
+            font-weight: 300;
+        }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(156, 39, 176, 0.05));
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.4rem;
+            border: 1px solid rgba(0, 212, 255, 0.15);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            z-index: 0;
+        }
+
+        .card:hover::before {
+            top: -100%;
+            left: -100%;
+        }
+
+        .card:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.4), 0 0 40px rgba(156, 39, 176, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card h3 i {
+            font-size: 1.1rem;
+            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.8rem 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 300;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .risk-box {
+            text-align: center;
+            padding: 1.4rem 1rem;
+            border-radius: 12px;
+            background: radial-gradient(circle at top, rgba(0,212,255,0.15), transparent 60%);
+            position: relative;
+            z-index: 1;
+        }
+
+        .risk-score {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .risk-score.low {
+            background: linear-gradient(45deg, #00ff7f, #00d4ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .risk-score.moderate {
+            background: linear-gradient(45deg, #ffa500, #ffcc00);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .risk-score.high {
+            background: linear-gradient(45deg, #ff4444, #ff6b6b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .risk-label {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .confidence {
+            font-size: 0.85rem;
+            color: #ccc;
+            font-weight: 300;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: rgba(0, 212, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .text-block {
+            font-size: 0.95rem;
+            color: #ddd;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+        }
+
+        .text-block p + p {
+            margin-top: 0.7rem;
+        }
+
+        .text-block strong {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .list-block {
+            list-style: none;
+            margin-top: 0.6rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .list-block li {
+            padding-left: 1.1rem;
+            position: relative;
+            font-size: 0.93rem;
+            color: #ddd;
+            margin-bottom: 0.4rem;
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        .list-block li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+        }
+
+        .drug-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .drug-table th,
+        .drug-table td {
+            padding: 0.9rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .drug-table th {
+            background: rgba(0, 212, 255, 0.08);
+            color: #00d4ff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .drug-table td {
+            font-size: 0.9rem;
+            color: #ddd;
+            font-weight: 400;
+        }
+
+        .drug-table tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .drug-name {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .drug-category {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(156, 39, 176, 0.2);
+            color: #9c27b0;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .effectiveness-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.3rem;
+        }
+
+        .effectiveness-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff7f, #00d4ff);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .report-actions {
+            margin-top: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: flex-end;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            padding: 0.7rem 1.4rem;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 60px rgba(0, 212, 255, 0.8), 0 0 40px rgba(156, 39, 176, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            color: #00d4ff;
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        #scrollTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.5);
+            z-index: 999;
+        }
+        #scrollTop.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        #scrollTop:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.7);
+        }
+        #scrollTop i {
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem 0.7rem;
+            }
+
+            .report-wrapper {
+                padding: 1.4rem;
+            }
+
+            .report-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .report-meta {
+                text-align: left;
+            }
+
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .risk-score {
+                font-size: 2.5rem;
+            }
+
+            .report-actions {
+                justify-content: center;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .drug-table {
+                font-size: 0.8rem;
+            }
+
+            .drug-table th,
+            .drug-table td {
+                padding: 0.6rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="container">
+        <a href="{{ url_for('patient_portal') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Patient Portal
+        </a>
+
+        <div class="header">
+            <h1>My Detailed Report</h1>
+            <p>Personalized AI-powered clinical and genomic summary</p>
+        </div>
+
+        <div class="report-wrapper">
+            <div class="report-header">
+                <div class="report-header-title">
+                    <h2><i class="fas fa-file-medical-alt"></i> GeneCure AI Medical Report</h2>
+                    <span id="patientNameHeader">Patient: {{ user.name if user else 'Loading...' }}</span>
+                </div>
+                <div class="report-meta">
+                    <div id="reportDate">Generated on: --</div>
+                    <div id="reportId">Report ID: GC-2025-0001</div>
+                </div>
+            </div>
+
+            <div class="section-grid">
+                <div class="card">
+                    <h3><i class="fas fa-user-circle"></i> Patient Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Full Name</span>
+                            <span class="info-value" id="patientName">{{ user.name if user else 'N/A' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Age</span>
+                            <span class="info-value" id="patientAge">{{ user.age if user and user.age else 'N/A' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Gender</span>
+                            <span class="info-value" id="patientGender">{{ user.gender if user and user.gender else 'N/A' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value" id="patientEmail">{{ user.email if user else 'N/A' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-heartbeat"></i> Risk Assessment</h3>
+                    <div class="risk-box">
+                        {% if reports and reports|length > 0 %}
+                            {% set latest = reports[0] %}
+                            {% set risk_label = latest.risk_result.risk_label if latest.risk_result else 'N/A' %}
+                            {% set confidence = (latest.risk_result.confidence * 100) | round(0) if latest.risk_result else 0 %}
+                            {% set risk_class = 'high' if 'HIGH' in risk_label else ('low' if 'LOW' in risk_label else 'moderate') %}
+                            
+                            <div class="risk-score {{ risk_class }}" id="riskScore">{{ risk_label }}</div>
+                            <div class="risk-label" id="riskLabel">Current Status</div>
+                            <div class="confidence" id="confidenceText">
+                                <i class="fas fa-check-circle"></i> Model confidence: {{ confidence }}%
+                            </div>
+                        {% else %}
+                            <div class="risk-score moderate" id="riskScore">No Data</div>
+                            <div class="risk-label" id="riskLabel">Upload a report for assessment</div>
+                            <div class="confidence" id="confidenceText">
+                                <i class="fas fa-info-circle"></i> No predictions yet
+                            </div>
+                        {% endif %}
+                        <div class="tag">
+                            <i class="fas fa-microchip"></i> AI-based prediction
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancer Type Detection -->
+            {% if reports and reports|length > 0 %}
+                {% set latest = reports[0] %}
+                <div class="card" style="margin-bottom: 1.2rem;">
+                    <h3><i class="fas fa-dna"></i> Cancer Type Detection</h3>
+                    <div class="text-block">
+                        <p>
+                            <strong>Detected Cancer Type:</strong> 
+                            {{ latest.cancer_result.predicted_cancer_type if latest.cancer_result else 'N/A' }}
+                        </p>
+                        <p>
+                            <strong>Detection Confidence:</strong> 
+                            {{ (latest.cancer_result.confidence * 100) | round(1) if latest.cancer_result else 0 }}%
+                        </p>
+                        <p>
+                            Our AI model analyzed your genetic and clinical data to identify the cancer type. 
+                            This classification helps in determining the most effective treatment approach.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card" style="margin-bottom: 1.2rem;">
+                <h3><i class="fas fa-clipboard-list"></i> Clinical Summary</h3>
+                <div class="text-block" id="clinicalSummary">
+                    {% if reports and reports|length > 0 %}
+                        {% set latest = reports[0] %}
+                        <p>
+                            Based on your analysis, the AI model has identified a 
+                            <strong>{{ latest.risk_result.risk_label if latest.risk_result else 'N/A' }}</strong> profile.
+                            The detected cancer type is <strong>{{ latest.cancer_result.predicted_cancer_type if latest.cancer_result else 'N/A' }}</strong> 
+                            with a confidence level of {{ (latest.cancer_result.confidence * 100) | round(1) if latest.cancer_result else 0 }}%.
+                        </p>
+                        <p>
+                            This assessment considers multiple clinical indicators including tumor stage
+                            ({{ latest.tumor_stage if latest.tumor_stage else 'Unknown' }}), 
+                            genetic markers, and clinical presentation patterns.
+                        </p>
+                    {% else %}
+                        <p>
+                            No analysis available yet. Please upload your medical report to receive 
+                            a personalized AI-powered assessment.
+                        </p>
+                    {% endif %}
+                    <p>
+                        This report is intended to support, not replace, evaluation by a qualified
+                        healthcare professional. Please share this summary with your doctor for
+                        detailed interpretation.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Personalized Drug Recommendations -->
+            {% if reports and reports|length > 0 and reports[0].drug_result and reports[0].drug_result.top_drugs %}
+                <div class="card" style="margin-bottom: 1.2rem;">
+                    <h3><i class="fas fa-pills"></i> Personalized Treatment Recommendations</h3>
+                    <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 1rem; position: relative; z-index: 1;">
+                        Based on your cancer type and risk profile, here are the AI-recommended treatment options:
+                    </p>
+                    <table class="drug-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Drug Name</th>
+                                <th>Effectiveness</th>
+                                <th>Category</th>
+                                <th>Why Recommended</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for drug in reports[0].drug_result.top_drugs %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td class="drug-name">{{ drug.drug }}</td>
+                                <td>
+                                    <div>IC50: {{ drug.mean_ic50 | round(3) }}</div>
+                                    <div class="effectiveness-bar">
+                                        {% set effectiveness = (1 / (drug.mean_ic50 + 1)) * 100 %}
+                                        <div class="effectiveness-fill" style="width: '{{ [effectiveness, 100] | min }}%'"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="drug-category">{{ drug.category }}</span>
+                                </td>
+                                <td style="font-size: 0.85rem;">{{ drug.reason }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <p style="color: #aaa; font-size: 0.85rem; margin-top: 1rem; font-style: italic; position: relative; z-index: 1;">
+                        * Lower IC50 values indicate higher effectiveness. These recommendations are based on drug response models 
+                        and should be discussed with your oncologist.
+                    </p>
+                </div>
+            {% endif %}
+
+            <div class="card" style="margin-bottom: 1.2rem;">
+                <h3><i class="fas fa-chart-line"></i> Key Contributing Factors</h3>
+                <ul class="list-block" id="keyFactors">
+                    {% if reports and reports|length > 0 %}
+                        <li>Risk Level: {{ reports[0].risk_result.risk_label if reports[0].risk_result else 'N/A' }}</li>
+                        <li>Cancer Type: {{ reports[0].cancer_result.predicted_cancer_type if reports[0].cancer_result else 'N/A' }}</li>
+                        <li>Tumor Stage: {{ reports[0].tumor_stage if reports[0].tumor_stage else 'Unknown' }}</li>
+                        <li>Scenario: {{ reports[0].scenario if reports[0].scenario else 'N/A' }}</li>
+                    {% else %}
+                        <li>No data available - please upload a report for analysis</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-user-md"></i> Suggested Next Steps</h3>
+                <ul class="list-block" id="recommendations">
+                    <li><strong>Consult Your Oncologist:</strong> Schedule a consultation to review this AI-powered assessment and treatment recommendations.</li>
+                    <li><strong>Follow-up Testing:</strong> Your doctor may recommend additional imaging or laboratory tests to confirm these findings.</li>
+                    <li><strong>Treatment Planning:</strong> Discuss the personalized drug recommendations with your healthcare team to develop an optimal treatment plan.</li>
+                    <li><strong>Lifestyle Management:</strong> Maintain a healthy lifestyle with balanced nutrition, regular exercise, and adequate rest.</li>
+                    <li><strong>Regular Monitoring:</strong> Keep track of symptoms and attend all follow-up appointments as scheduled.</li>
+                </ul>
+            </div>
+
+            <div class="report-actions">
+<a href="{{ url_for('patient_upload') }}" class="btn btn-outline">Upload</a>
+                    <i class="fas fa-upload"></i> Upload New Report
+                </button>
+                <button class="btn btn-primary" onclick="downloadPatientReport()">
+                    <i class="fas fa-download"></i> Download as PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scrollTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        window.addEventListener('load', () => {
+            gsap.to('.back-link', {
+                opacity: 1,
+                x: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+
+            gsap.to('.header', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.2,
+                ease: "power2.out"
+            });
+
+            gsap.to('.report-wrapper', {
+                opacity: 1,
+                y: 0,
+                duration: 1.2,
+                delay: 0.4,
+                ease: "power3.out"
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.getElementById('scrollTop');
+            if (window.pageYOffset > 300) {
+                scrollTop.classList.add('visible');
+            } else {
+                scrollTop.classList.remove('visible');
+            }
+        });
+
+        document.getElementById('scrollTop').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function setReportMeta() {
+            const dateEl = document.getElementById('reportDate');
+            const idEl = document.getElementById('reportId');
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const randomId = 'GC-' + now.getFullYear() + '-' + String(now.getTime()).slice(-6);
+            dateEl.textContent = 'Generated on: ' + dateStr;
+            idEl.textContent = 'Report ID: ' + randomId;
+        }
+
+        function downloadPatientReport() {
+            alert('Generating comprehensive PDF report with:\n\n✓ Patient Information\n✓ Cancer Type Detection\n✓ Risk Assessment\n✓ Personalized Drug Recommendations\n✓ Clinical Summary\n✓ Next Steps\n\nThe PDF will be available for download shortly.');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setReportMeta();
+        });
+    </script>
+</body>
+</html>

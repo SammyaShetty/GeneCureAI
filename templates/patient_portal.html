@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Portal - GeneCure AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background animation */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+            animation: rotateGlow 22s linear infinite;
+        }
+        @keyframes rotateGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+        nav .logo {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        nav .logo span {
+            font-size: 1.2rem;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        nav ul li a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding-bottom: 2px;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #00d4ff;
+            border-color: #00d4ff;
+        }
+
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem 2.5rem;
+        }
+
+        .portal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .portal-header-title h1 {
+            font-size: 2.1rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .portal-header-title p {
+            color: #aaa;
+            font-size: 0.95rem;
+            margin-top: 0.3rem;
+        }
+        .portal-header-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .badge-pill {
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(0, 212, 255, 0.08);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            font-size: 0.75rem;
+            color: #00d4ff;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(18px);
+            border-radius: 16px;
+            padding: 1.5rem 1.4rem;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding-bottom: 0.7rem;
+        }
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.6rem 1.1rem;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            color: #fff;
+            border: 1px solid rgba(0, 212, 255, 0.4);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
+            transform: translateY(-1px);
+        }
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #00d4ff);
+            color: #fff;
+        }
+
+        .profile-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            gap: 0.8rem;
+        }
+        .profile-field label {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        .profile-field span {
+            font-size: 0.9rem;
+            color: #fff;
+            font-weight: 500;
+        }
+        .profile-field input {
+            flex: 1;
+            padding: 0.45rem 0.7rem;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            background: rgba(10, 10, 20, 0.7);
+            color: #fff;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .risk-display {
+            text-align: center;
+            margin: 1rem 0 0.8rem;
+        }
+        .risk-display div:first-child {
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+        .risk-score {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0.4rem 0;
+            color: #ff5252;
+        }
+        .confidence {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+        .risk-summary {
+            font-size: 0.85rem;
+            color: #ddd;
+            line-height: 1.6;
+            margin-top: 0.6rem;
+        }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+        .reports-table th,
+        .reports-table td {
+            padding: 0.6rem 0.7rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            text-align: left;
+        }
+        .reports-table th {
+            font-weight: 600;
+            color: #ddd;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge-high {
+            background: rgba(255, 82, 82, 0.2);
+            color: #ff5252;
+        }
+        .badge-medium {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffd54f;
+        }
+        .badge-low {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+        .badge-neutral {
+            background: rgba(158, 158, 158, 0.2);
+            color: #e0e0e0;
+        }
+
+        .btn-download {
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            background: transparent;
+            color: #00d4ff;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-download:hover {
+            background: rgba(0, 212, 255, 0.12);
+        }
+
+        .consent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        .consent-label {
+            color: #e0e0ff;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .consent-description {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 0.2rem;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            border-radius: 999px;
+            background: rgba(120, 120, 140, 0.6);
+            cursor: pointer;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        .toggle-switch.active {
+            background: linear-gradient(45deg, #28a745, #00d4ff);
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.6);
+        }
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        @media (max-width: 900px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav .container {
+                padding: 0.8rem 1.1rem;
+            }
+            .page-wrapper {
+                padding: 5.5rem 1rem 2rem;
+            }
+            .portal-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .profile-field {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.3rem;
+            }
+            .profile-field input {
+                width: 100%;
+            }
+            .reports-table {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Top nav -->
+    <nav id="navbar">
+        <div class="container">
+            <div class="logo">
+                <span>ðŸ§¬</span> GeneCure AI
+            </div>
+            <ul id="nav-menu">
+                <li><a href="{{ url_for('patient_portal') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('patient_reports') }}">My Reports</a></li>
+                <li><a href="#" onclick="confirmLogout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="page-wrapper">
+        <section class="portal-header">
+            <div class="portal-header-title">
+                <h1>Patient Portal</h1>
+                <p>View and manage your profile, reports, and AI predictions.</p>
+            </div>
+            <div class="portal-header-actions">
+                <span class="badge-pill">Secure â€¢ Encrypted</span>
+                <span class="badge-pill">AI-assisted insights</span>
+            </div>
+        </section>
+
+        <div class="content-grid">
+            <!-- Profile Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Profile Information</h2>
+                    <button class="btn btn-primary" id="editBtn" onclick="toggleEdit()">Edit</button>
+                </div>
+                <div id="profileFields">
+                    <div class="profile-field">
+                        <label>Name:</label>
+                        <span id="nameDisplay">{{ user.name if user else '' }}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Age:</label>
+                        <span id="ageDisplay">{{ user.age if user and user.age else '' }}</span>
+                        <input type="number" id="ageInput" value="{{ user.age if user and user.age else '' }}" style="display:none;">
+                    </div>
+                    <div class="profile-field">
+                        <label>Gender:</label>
+                        <span id="genderDisplay">{{ user.gender if user and user.gender else '' }}</span>
+                        <input type="text" id="genderInput" value="{{ user.gender if user and user.gender else '' }}" style="display:none;">
+                    </div>
+                    <div class="profile-field">
+                        <label>Email:</label>
+                        <span id="emailDisplay">{{ user.email if user else '' }}</span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Contact:</label>
+                        <span id="contactDisplay">{{ user.phone if user and user.phone else '' }}</span>
+                        <input type="tel" id="contactInput" value="{{ user.phone if user and user.phone else '' }}" style="display:none;">
+                    </div>
+                </div>
+
+                <!-- Upload report small button under profile -->
+                <a href="{{ url_for('patient_upload') }}" class="btn btn-primary"
+                   style="margin-top: 12px; padding: 6px 14px; font-size: 0.8rem; border-radius:999px; display:inline-flex; align-items:center; gap:0.4rem;">
+                    <i class="fas fa-upload" style="font-size:0.8rem;"></i> Upload Report
+                </a>
+
+                <button class="btn btn-success" id="saveBtn" style="display:none; margin-top: 15px; width:100%;" onclick="saveChanges()">
+                    Save Changes
+                </button>
+            </div>
+
+            <!-- Prediction Card (static for now) -->
+            <!-- Prediction Card -->
+<div class="card">
+    <div class="card-header">
+        <h2>Prediction Result</h2>
+    </div>
+    {% if reports and reports|length > 0 %}
+        {% set latest = reports[0] %}
+
+        {# Decide risk color in Jinja so CSS stays valid #}
+        {% set risk_color = '#ffd54f' %}
+        {% if latest.risk_result.high_risk_prob > 0.7 %}
+            {% set risk_color = '#ff5252' %}
+        {% elif latest.risk_result.high_risk_prob < 0.3 %}
+            {% set risk_color = '#81c784' %}
+        {% endif %}
+
+        <div class="risk-display">
+            <div>Current Risk Level</div>
+            <div class="risk-score" {% if risk_color %}style="color: {{ risk_color }}"{% endif %}>
+                {{ latest.risk_result.risk_label }}
+            </div>
+            <div class="confidence">
+                Confidence: {{ (latest.risk_result.confidence * 100)|round|int }}%
+            </div>
+        </div>
+
+        <div class="risk-summary">
+            Detected: <strong>{{ latest.cancer_result.predicted_cancer_type }}</strong>
+            ({{ (latest.cancer_result.confidence * 100)|round|int }}% confidence).<br>
+            Risk: {{ latest.risk_result.risk_label }}
+            (High: {{ (latest.risk_result.high_risk_prob * 100)|round|int }}%,
+            Low: {{ (latest.risk_result.low_risk_prob * 100)|round|int }}%).
+
+            {% if latest.drug_result.top_drugs and latest.drug_result.top_drugs|length > 0 %}
+                <br><br><strong>Top Drug Recommendations:</strong>
+                <ul style="margin-top: 8px; padding-left: 20px;">
+                    {% for drug in latest.drug_result.top_drugs[:3] %}
+                        <li>
+                            {{ drug.drug }} ({{ drug.category }}) - IC50:
+                            {{ drug.mean_ic50|round(3) }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="risk-display">
+            <div>No Predictions Yet</div>
+            <div class="risk-score" style="color: #aaa;">--</div>
+            <div class="confidence">Upload a report to get started</div>
+        </div>
+        <div class="risk-summary">
+            Upload your medical report to receive AI-powered risk assessment
+            and personalized treatment recommendations.
+        </div>
+    {% endif %}
+    <button class="btn btn-primary" style="width: 100%;" onclick="viewDetailedReport()">
+        View Detailed Report
+    </button>
+</div>
+
+        <!-- Reports History -->
+        <div class="card full-width">
+            <div class="card-header">
+                <h2>Reports History</h2>
+            </div>
+            <table class="reports-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Risk Level</th>
+                        <th>Confidence</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+    {% if reports and reports|length > 0 %}
+        {% for r in reports %}
+        <tr>
+            <td>
+                {% if r.created_at %}
+                    {{ r.created_at.strftime("%Y-%m-%d") }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% set risk = (r.risk_result.risk_label or 'N/A')|lower %}
+                <span class="badge
+                    {% if 'high' in risk %}badge-high
+                    {% elif 'low' in risk %}badge-low
+                    {% elif 'intermediate' in risk or 'moderate' in risk %}badge-medium
+                    {% else %}badge-neutral{% endif %}">
+                    {{ r.risk_result.risk_label or 'N/A' }}
+                </span>
+            </td>
+            <td>
+                {{ (r.risk_result.confidence * 100)|round|int }}%
+            </td>
+            <td>
+                <a href="{{ url_for('patient_reports') }}" class="btn-download">
+    View Details
+</a>
+
+
+            </td>
+        </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="4" style="text-align:center; color:#aaa;">
+                No reports available yet.
+            </td>
+        </tr>
+    {% endif %}
+</tbody>
+
+            </table>
+        </div>
+
+        <!-- Consent & Settings -->
+        <div class="card full-width">
+            <div class="card-header">
+                <h2>Consent & Settings</h2>
+            </div>
+
+            <div class="consent-item">
+                <div>
+                    <div class="consent-label">Share anonymized data for research</div>
+                    <div class="consent-description">
+                        Allow your de-identified data to contribute to AI model improvements and cancer research.
+                    </div>
+                </div>
+                <div class="toggle-switch" id="consentResearch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+
+            <div class="consent-item">
+                <div>
+                    <div class="consent-label">Enable notifications for new reports</div>
+                    <div class="consent-description">
+                        Get notified when new AI predictions or updated risk assessments are available.
+                    </div>
+                </div>
+                <div class="toggle-switch" id="consentNotifications">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Profile edit toggle
+        function toggleEdit() {
+            const isEditing = document.getElementById('editBtn').dataset.editing === 'true';
+            const editBtn = document.getElementById('editBtn');
+            const saveBtn = document.getElementById('saveBtn');
+
+            const ageDisplay = document.getElementById('ageDisplay');
+            const genderDisplay = document.getElementById('genderDisplay');
+            const contactDisplay = document.getElementById('contactDisplay');
+
+            const ageInput = document.getElementById('ageInput');
+            const genderInput = document.getElementById('genderInput');
+            const contactInput = document.getElementById('contactInput');
+
+            if (!isEditing) {
+                // Enter edit mode
+                ageDisplay.style.display = 'none';
+                genderDisplay.style.display = 'none';
+                contactDisplay.style.display = 'none';
+
+                ageInput.style.display = 'block';
+                genderInput.style.display = 'block';
+                contactInput.style.display = 'block';
+
+                editBtn.textContent = 'Cancel';
+                editBtn.dataset.editing = 'true';
+                saveBtn.style.display = 'inline-flex';
+            } else {
+                // Cancel edit mode
+                ageDisplay.style.display = 'inline';
+                genderDisplay.style.display = 'inline';
+                contactDisplay.style.display = 'inline';
+
+                ageInput.style.display = 'none';
+                genderInput.style.display = 'none';
+                contactInput.style.display = 'none';
+
+                editBtn.textContent = 'Edit';
+                editBtn.dataset.editing = 'false';
+                saveBtn.style.display = 'none';
+            }
+        }
+
+        // Save changes locally (front-end only for now)
+        function saveChanges() {
+            const ageInput = document.getElementById('ageInput');
+            const genderInput = document.getElementById('genderInput');
+            const contactInput = document.getElementById('contactInput');
+
+            document.getElementById('ageDisplay').textContent = ageInput.value;
+            document.getElementById('genderDisplay').textContent = genderInput.value;
+            document.getElementById('contactDisplay').textContent = contactInput.value;
+
+            // Store in localStorage so patient_report can read it as well
+            const profile = {
+                name: document.getElementById('nameDisplay').textContent,
+                age: ageInput.value,
+                gender: genderInput.value,
+                contact: contactInput.value,
+                email: document.getElementById('emailDisplay').textContent
+            };
+            localStorage.setItem('patientProfile', JSON.stringify(profile));
+
+            // Exit edit mode
+            toggleEdit();
+            alert('Profile updated locally (front-end). To persist to DB, we will later add API.');
+        }
+
+        // View detailed report
+        function viewDetailedReport() {
+window.location.href = "{{ url_for('patient_reports') }}";
+        }
+
+        // Download single report by date (placeholder)
+        function downloadReport(date) {
+            alert('Download report for date: ' + date + '\\n(Backend download implementation will go here.)');
+        }
+
+        // Logout confirm
+        function confirmLogout() {
+            if (confirm('Are you sure you want to log out?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // Consent toggles
+        document.addEventListener('DOMContentLoaded', () => {
+            ['consentResearch', 'consentNotifications'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('click', () => {
+                        el.classList.toggle('active');
+                    });
+                }
+            });
+        });
+        // Add this to the existing script section in patient_portal.html
+
+// Load prediction results from localStorage on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadPredictionResults();
+    
+    // Existing consent toggles code
+    ['consentResearch', 'consentNotifications'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('click', () => {
+                el.classList.toggle('active');
+            });
+        }
+    });
+});
+
+function loadPredictionResults() {
+    const results = localStorage.getItem('predictionResults');
+    if (!results) return;
+    
+    try {
+        const data = JSON.parse(results);
+        const predictions = data.predictions;
+        
+        if (!predictions) return;
+        
+        // Update the Prediction Result card
+        const riskLabel = predictions.risk_result?.risk_label || 'MODERATE';
+        const highRiskProb = predictions.risk_result?.high_risk_prob || 0.5;
+        const cancerConfidence = predictions.cancer_result?.confidence || 0.85;
+        const cancerType = predictions.cancer_result?.predicted_cancer_type || 'Unknown';
+        
+        // Update risk display
+        const riskScoreEl = document.querySelector('.risk-score');
+        if (riskScoreEl) {
+            riskScoreEl.textContent = riskLabel.replace(' RISK', '');
+            
+            // Update color based on risk
+            if (highRiskProb > 0.7) {
+                riskScoreEl.style.color = '#ff5252';
+            } else if (highRiskProb < 0.3) {
+                riskScoreEl.style.color = '#81c784';
+            } else {
+                riskScoreEl.style.color = '#ffd54f';
+            }
+        }
+        
+        // Update confidence
+        const confidenceEl = document.querySelector('.confidence');
+        if (confidenceEl) {
+            confidenceEl.textContent = `Confidence: ${(cancerConfidence * 100).toFixed(0)}%`;
+        }
+        
+        // Update risk summary
+        const summaryEl = document.querySelector('.risk-summary');
+        if (summaryEl) {
+            summaryEl.textContent = `Based on your genomic profile and clinical data, our AI model has identified ${cancerType} with ${(cancerConfidence * 100).toFixed(0)}% confidence. Risk assessment indicates ${riskLabel.toLowerCase()} category with ${(highRiskProb * 100).toFixed(0)}% high risk probability. This assessment combines genetic variants with clinical indicators. Regular monitoring and preventive measures are recommended.`;
+        }
+        
+    } catch (error) {
+        console.error('Error loading prediction results:', error);
+    }
+}
+
+// Existing functions remain the same
+function toggleEdit() {
+    const isEditing = document.getElementById('editBtn').dataset.editing === 'true';
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    const ageDisplay = document.getElementById('ageDisplay');
+    const genderDisplay = document.getElementById('genderDisplay');
+    const contactDisplay = document.getElementById('contactDisplay');
+
+    const ageInput = document.getElementById('ageInput');
+    const genderInput = document.getElementById('genderInput');
+    const contactInput = document.getElementById('contactInput');
+
+    if (!isEditing) {
+        ageDisplay.style.display = 'none';
+        genderDisplay.style.display = 'none';
+        contactDisplay.style.display = 'none';
+
+        ageInput.style.display = 'block';
+        genderInput.style.display = 'block';
+        contactInput.style.display = 'block';
+
+        editBtn.textContent = 'Cancel';
+        editBtn.dataset.editing = 'true';
+        saveBtn.style.display = 'inline-flex';
+    } else {
+        ageDisplay.style.display = 'inline';
+        genderDisplay.style.display = 'inline';
+        contactDisplay.style.display = 'inline';
+
+        ageInput.style.display = 'none';
+        genderInput.style.display = 'none';
+        contactInput.style.display = 'none';
+
+        editBtn.textContent = 'Edit';
+        editBtn.dataset.editing = 'false';
+        saveBtn.style.display = 'none';
+    }
+}
+
+function saveChanges() {
+    const ageInput = document.getElementById('ageInput');
+    const genderInput = document.getElementById('genderInput');
+    const contactInput = document.getElementById('contactInput');
+
+    document.getElementById('ageDisplay').textContent = ageInput.value;
+    document.getElementById('genderDisplay').textContent = genderInput.value;
+    document.getElementById('contactDisplay').textContent = contactInput.value;
+
+    const profile = {
+        name: document.getElementById('nameDisplay').textContent,
+        age: ageInput.value,
+        gender: genderInput.value,
+        contact: contactInput.value,
+        email: document.getElementById('emailDisplay').textContent
+    };
+    localStorage.setItem('patientProfile', JSON.stringify(profile));
+
+    toggleEdit();
+    alert('Profile updated locally.');
+}
+
+function viewDetailedReport() {
+    window.location.href = "{{ url_for('patient_reports') }}";
+}
+
+function downloadReport(date) {
+    alert('Download report for date: ' + date);
+}
+
+function confirmLogout() {
+    if (confirm('Are you sure you want to log out?')) {
+        window.location.href = '/logout';
+    }
+}
+    </script>
+</body>
+</html>

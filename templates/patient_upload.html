@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Report - GeneCure AI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        }
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::before {
+            width: 80%;
+        }
+
+        .nav-links a:hover {
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .card h2 {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .privacy-notice {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(156, 39, 176, 0.1));
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #ddd;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+        }
+
+        .privacy-notice strong {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .upload-area {
+            border: 3px dashed rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+            z-index: 1;
+        }
+
+        .upload-area.dragover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .upload-area:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-area h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-area p {
+            color: #aaa;
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .file-types {
+            color: #888;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .file-preview {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .file-preview.show {
+            display: block;
+        }
+
+        .preview-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .preview-thumbnail {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .preview-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .preview-info {
+            flex: 1;
+        }
+
+        .preview-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .preview-size {
+            font-size: 13px;
+            color: #aaa;
+            font-weight: 300;
+        }
+
+        .btn-remove {
+            background: linear-gradient(45deg, #ff4444, #ff6b6b);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-remove:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 68, 68, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ddd;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #666;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .consent-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 25px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.1), rgba(255, 193, 7, 0.05));
+            border-radius: 12px;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .consent-checkbox input[type="checkbox"] {
+            margin-top: 4px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .consent-checkbox label {
+            color: #ddd;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 300;
+        }
+
+        .consent-checkbox label strong {
+            color: #ffcc00;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            color: white;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 60px rgba(0, 212, 255, 0.8), 0 0 40px rgba(156, 39, 176, 0.5);
+        }
+
+        .btn-primary:disabled {
+            background: rgba(100, 100, 100, 0.3);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #9c27b0);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .btn-cancel {
+            background: linear-gradient(45deg, #ff4444, #ff6b6b);
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 68, 68, 0.4);
+        }
+
+        .workflow-status {
+            display: none;
+            background: rgba(0, 212, 255, 0.05);
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .workflow-status.show {
+            display: block;
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .workflow-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .workflow-step::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: rgba(100, 100, 100, 0.3);
+            z-index: -1;
+        }
+
+        .workflow-step:last-child::after {
+            display: none;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(100, 100, 100, 0.3);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .workflow-step.active .step-icon {
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .workflow-step.completed .step-icon {
+            background: linear-gradient(45deg, #00ff7f, #00d4ff);
+            box-shadow: 0 0 20px rgba(0, 255, 127, 0.5);
+        }
+
+        .step-label {
+            font-size: 13px;
+            color: #aaa;
+            font-weight: 300;
+        }
+
+        .result-card {
+            display: none;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 212, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .result-card.show {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card h2 {
+            position: relative;
+            z-index: 1;
+        }
+
+        .risk-gauge {
+            background: linear-gradient(135deg, #00d4ff 0%, #9c27b0 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        .risk-score {
+            font-size: 64px;
+            font-weight: 800;
+            margin: 15px 0;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+
+        .risk-label {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .confidence-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .interpretation {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #ddd;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+        }
+
+        .signals-list {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .signals-list h4 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .signals-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .signals-list li {
+            padding: 8px 0;
+            padding-left: 20px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            color: #ccc;
+            position: relative;
+            font-weight: 300;
+        }
+
+        .signals-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 1.2rem;
+        }
+
+        .signals-list li:last-child {
+            border-bottom: none;
+        }
+
+        .recommendations {
+            margin-top: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .recommendations h4 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .recommendation-item {
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.1), rgba(255, 193, 7, 0.05));
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ffcc00;
+            color: #ddd;
+            font-weight: 300;
+        }
+
+        .recommendation-item strong {
+            color: #ffcc00;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-action {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .error-message {
+            display: none;
+            background: linear-gradient(135deg, rgba(255, 68, 68, 0.2), rgba(255, 107, 107, 0.1));
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border-left: 4px solid #ff4444;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-steps {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .workflow-step::after {
+                display: none;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">🧬 GeneCure AI</div>
+            <nav class="nav-links">
+                <a href="{{url_for('patient_portal')}}">Dashboard</a>
+                <a href="/logout">Logout</a>
+            </nav>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('patient_upload') }}">
+    <div class="card">
+        <h2>Upload Medical Report for Risk Assessment</h2>
+        
+        <div class="privacy-notice">
+            <strong>🔒 Privacy & Security:</strong> Your files are transmitted securely over HTTPS and processed server-side for risk assessment.
+        </div>
+
+        <!-- File Upload Area -->
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📄</div>
+            <h3>Drag & Drop Your Report Here</h3>
+            <p>or click to browse</p>
+            <p class="file-types">Accepted: PDF, JPG, PNG, CSV (Max: 50MB)</p>
+            <input type="file" name="patient_file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.csv" style="display: none;">
+        </div>
+
+        <div class="file-preview" id="filePreview"></div>
+
+        <!-- Scenario Selection -->
+        <div class="form-group" style="margin-top: 25px;">
+            <label>Clinical Scenario *</label>
+            <select name="scenario" id="scenario" required style="width: 100%; padding: 12px; border: 2px solid rgba(0, 212, 255, 0.2); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: #fff; font-family: 'Montserrat', sans-serif;">
+                <option value="">Select Scenario</option>
+                <option value="EARLY_SCREEN">Early Screening (Preventive Check-up)</option>
+                <option value="KNOWN_CANCER">Known Cancer (Follow-up/Treatment)</option>
+            </select>
+        </div>
+
+        <!-- Tumor Stage -->
+        <div class="form-group">
+            <label for="tumor_stage">Tumor Stage (if known)</label>
+            <input type="text" name="tumor_stage" id="tumor_stage" placeholder="e.g., Stage I, Stage II, Stage III, Unknown">
+        </div>
+
+        <div class="form-row" style="margin-top: 15px;">
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" name="age" id="age" placeholder="Enter your age" min="1" max="120">
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender">
+                    <option value="">Select</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="symptoms">Symptoms (Optional)</label>
+            <textarea name="symptoms" id="symptoms" rows="3" placeholder="Describe any symptoms you're experiencing"></textarea>
+        </div>
+
+        <div class="consent-checkbox">
+            <input type="checkbox" id="consentCheckbox" required>
+            <label for="consentCheckbox">
+                <strong>I consent to processing my data for risk assessment.</strong> I understand that my data will be analyzed by AI algorithms.
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="uploadBtn">
+            Upload & Analyze Report
+        </button>
+
+        <div class="error-message" id="errorMessage"></div>
+    </div>
+</form>
+
+<!-- Results Display (shown after form submission) -->
+{% if predictions %}
+<div class="result-card show" id="resultCard">
+    <h2>🎯 Analysis Results</h2>
+    
+    <!-- Model 1: Cancer Type Detection -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+        <h3><i class="fas fa-dna"></i> Cancer Type Detection</h3>
+        <div class="text-block">
+            <p>
+                <strong>Detected Type:</strong> 
+                {{ predictions.cancer_result.predicted_cancer_type }}
+            </p>
+            <p>
+                <strong>Confidence:</strong> 
+                {{ (predictions.cancer_result.confidence * 100) | round(1) }}%
+            </p>
+            <p style="margin-top: 1rem; color: #aaa; font-size: 0.9rem;">
+                Our AI model analyzed your genetic and clinical data to identify the cancer type 
+                based on gene expression patterns.
+            </p>
+        </div>
+    </div>
+
+    <!-- Model 2: Risk Assessment -->
+    <div class="risk-gauge">
+        <div>Risk Assessment</div>
+        <div class="risk-score" id="riskScore">{{ predictions.risk_result.risk_label }}</div>
+        <div class="risk-label" id="riskLabel">Current Status</div>
+        <div class="confidence-badge">
+            Confidence: {{ (predictions.risk_result.confidence * 100) | round(1) }}%
+        </div>
+    </div>
+
+    <div class="interpretation" id="interpretation">
+        Based on the analysis, your risk profile has been classified as 
+        <strong>{{ predictions.risk_result.risk_label }}</strong>.
+        This assessment combines clinical indicators including tumor stage 
+        ({{ selected_patient.tumor_stage if selected_patient else 'Unknown' }}), 
+        scenario ({{ predictions.scenario }}), and genetic patterns.
+    </div>
+
+    <!-- Model 3: Drug Recommendations -->
+    {% if predictions.drug_result.top_drugs %}
+    <div class="signals-list">
+        <h4>💊 Personalized Treatment Recommendations</h4>
+        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 1rem;">
+            Top recommended drugs based on your cancer type and risk profile:
+        </p>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 0.5rem;">
+            <thead>
+                <tr style="background: rgba(0, 212, 255, 0.1); border-bottom: 2px solid rgba(0, 212, 255, 0.3);">
+                    <th style="padding: 0.8rem; text-align: left; color: #00d4ff;">#</th>
+                    <th style="padding: 0.8rem; text-align: left; color: #00d4ff;">Drug Name</th>
+                    <th style="padding: 0.8rem; text-align: left; color: #00d4ff;">Effectiveness (IC50)</th>
+                    <th style="padding: 0.8rem; text-align: left; color: #00d4ff;">Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for drug in predictions.drug_result.top_drugs %}
+                <tr style="border-bottom: 1px solid rgba(0, 212, 255, 0.1);">
+                    <td style="padding: 0.8rem;">{{ loop.index }}</td>
+                    <td style="padding: 0.8rem; font-weight: 600; color: #fff;">{{ drug.drug }}</td>
+                    <td style="padding: 0.8rem;">{{ drug.mean_ic50 | round(3) }}</td>
+                    <td style="padding: 0.8rem;">
+                        <span style="background: rgba(156, 39, 176, 0.2); color: #9c27b0; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">
+                            {{ drug.category }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="padding: 0.5rem 0.8rem 1rem 0.8rem; font-size: 0.85rem; color: #aaa;">
+                        <em>{{ drug.reason }}</em>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="color: #aaa; font-size: 0.8rem; margin-top: 1rem; font-style: italic;">
+            * Lower IC50 values indicate higher effectiveness. These are AI-generated recommendations 
+            and should be discussed with your oncologist.
+        </p>
+    </div>
+    {% endif %}
+
+    <div class="recommendations">
+        <h4>📋 Recommended Next Steps</h4>
+        <div class="recommendation-item">
+            <strong>Consult Your Oncologist:</strong> Schedule an appointment to discuss these AI-generated findings.
+        </div>
+        <div class="recommendation-item">
+            <strong>Additional Testing:</strong> Your doctor may recommend confirmatory tests based on these results.
+        </div>
+        <div class="recommendation-item">
+            <strong>Treatment Planning:</strong> Review the personalized drug recommendations with your healthcare team.
+        </div>
+    </div>
+
+    <div class="action-buttons">
+<a href="{{ url_for('patient_reports') }}" class="btn btn-primary btn-action">
+    📊 View Detailed Report
+</a>
+            📄 View My Reports
+        </button>
+<a href="{{ url_for('patient_reports') }}" class="btn btn-primary btn-action">
+    📊 View Detailed Report
+</a>
+            🏠 Back to Portal
+        </button>
+        <button class="btn btn-primary btn-action" onclick="window.location.reload()">
+            🔄 Upload Another Report
+        </button>
+    </div>
+</div>
+{% endif %}
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        window.addEventListener('load', () => {
+            gsap.to('.header', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+
+            gsap.to('.card', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.2,
+                ease: "power3.out"
+            });
+        });
+
+        let selectedFile = null;
+        let uploadAborted = false;
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'text/csv', 'text/x-vcard'];
+            const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.csv', '.vcf'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedExtensions.includes(fileExtension)) {
+                showError('Invalid file type. Please upload PDF, JPG, PNG, CSV, or VCF files only.');
+                return;
+            }
+
+            const maxSize = 50 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showError('File size exceeds 50MB limit. Please upload a smaller file.');
+                return;
+            }
+
+            selectedFile = file;
+            displayFilePreview(file);
+            checkFormValidity();
+        }
+
+        function displayFilePreview(file) {
+            const preview = document.getElementById('filePreview');
+            const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            
+            let previewHTML = '<div class="preview-item">';
+            
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.querySelector('.preview-thumbnail').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                previewHTML += '<img class="preview-thumbnail" src="" alt="Preview">';
+            } else {
+                const icon = file.name.endsWith('.pdf') ? '📄' : '📋';
+                previewHTML += `<div class="preview-icon">${icon}</div>`;
+            }
+            
+            previewHTML += `
+                <div class="preview-info">
+                    <div class="preview-name">${file.name}</div>
+                    <div class="preview-size">${fileSize}</div>
+                </div>
+                <button class="btn-remove" onclick="removeFile()">Remove</button>
+            </div>`;
+            
+            preview.innerHTML = previewHTML;
+            preview.classList.add('show');
+        }
+
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('filePreview').classList.remove('show');
+            fileInput.value = '';
+            checkFormValidity();
+        }
+
+        function checkFormValidity() {
+            const consentChecked = document.getElementById('consentCheckbox').checked;
+            const age = document.getElementById('age').value;
+            const sex = document.getElementById('sex').value;
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            uploadBtn.disabled = !(selectedFile && consentChecked && age && sex);
+        }
+
+        document.getElementById('consentCheckbox').addEventListener('change', checkFormValidity);
+        document.getElementById('age').addEventListener('input', checkFormValidity);
+        document.getElementById('sex').addEventListener('change', checkFormValidity);
+
+// Replace the existing uploadFile() and displayResult() functions with these:
+
+async function uploadFile() {
+    if (!selectedFile) return;
+
+    uploadAborted = false;
+    const progressContainer = document.getElementById('progressContainer');
+    const progressFill = document.getElementById('progressFill');
+    
+    progressContainer.classList.add('show');
+    document.getElementById('uploadBtn').disabled = true;
+
+    // Prepare FormData
+    const formData = new FormData();
+    formData.append('patient_file', selectedFile);
+    formData.append('age', document.getElementById('age').value);
+    formData.append('gender', document.getElementById('sex').value);
+    formData.append('symptoms', document.getElementById('symptoms').value);
+    formData.append('last_checkup', document.getElementById('lastCheckup').value);
+    formData.append('scenario', 'EARLY_SCREEN'); // or determine based on form
+
+    try {
+        // Simulate progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            if (uploadAborted) {
+                clearInterval(progressInterval);
+                return;
+            }
+            progress += 10;
+            if (progress <= 90) {
+                progressFill.style.width = progress + '%';
+                progressFill.textContent = progress + '%';
+            }
+        }, 200);
+
+        // Make actual API call to your backend
+        const response = await fetch('/api/predict', {
+            method: 'POST',
+            body: formData
+        });
+
+        clearInterval(progressInterval);
+        progressFill.style.width = '100%';
+        progressFill.textContent = '100%';
+
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+
+        const data = await response.json();
+        
+        // Store results in localStorage for access across pages
+        localStorage.setItem('predictionResults', JSON.stringify(data));
+        
+        setTimeout(() => {
+            progressContainer.classList.remove('show');
+            startPrediction(data);
+        }, 500);
+
+    } catch (error) {
+        console.error('Upload error:', error);
+        showError('Upload failed. Please try again.');
+        progressContainer.classList.remove('show');
+        document.getElementById('uploadBtn').disabled = false;
+    }
+}
+
+async function startPrediction(data) {
+    const workflowStatus = document.getElementById('workflowStatus');
+    workflowStatus.classList.add('show');
+
+    document.getElementById('step1').classList.add('completed');
+    await sleep(1000);
+    
+    document.getElementById('step2').classList.add('active');
+    await sleep(2000);
+    
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step2').classList.add('completed');
+    
+    document.getElementById('step3').classList.add('active');
+    await sleep(1000);
+    
+    document.getElementById('step3').classList.add('completed');
+    
+    displayResult(data);
+}
+
+function displayResult(data) {
+    if (!data || !data.predictions) {
+        showError('No prediction data received');
+        return;
+    }
+
+    const predictions = data.predictions;
+    
+    // Extract cancer detection result
+    const cancerType = predictions.cancer_result?.predicted_cancer_type || 'Unknown';
+    const cancerConfidence = predictions.cancer_result?.confidence || 0;
+    
+    // Extract risk prediction result
+    const riskLabel = predictions.risk_result?.risk_label || 'MODERATE RISK';
+    const highRiskProb = predictions.risk_result?.high_risk_prob || 0;
+    const lowRiskProb = predictions.risk_result?.low_risk_prob || 0;
+    
+    // Calculate overall risk score (0-1 scale)
+    const riskScore = highRiskProb;
+    
+    // Determine risk level
+    let riskCategory = 'Moderate Risk';
+    let riskClass = 'moderate';
+    if (riskScore > 0.7) {
+        riskCategory = 'High Risk';
+        riskClass = 'high';
+    } else if (riskScore < 0.3) {
+        riskCategory = 'Low Risk';
+        riskClass = 'low';
+    }
+
+    // Update UI
+    document.getElementById('riskScore').textContent = (riskScore * 100).toFixed(0) + '%';
+    document.getElementById('riskScore').className = `risk-score ${riskClass}`;
+    document.getElementById('riskLabel').textContent = riskCategory;
+    document.getElementById('confidenceScore').textContent = (cancerConfidence * 100).toFixed(0) + '%';
+    
+    // Update interpretation
+    const interpretation = `Based on the analysis of your medical report, our AI model has detected ${cancerType} with ${(cancerConfidence * 100).toFixed(0)}% confidence. The risk assessment indicates ${riskCategory.toLowerCase()} with a ${(riskScore * 100).toFixed(0)}% probability. This assessment combines clinical indicators from your report with genomic and diagnostic patterns.`;
+    document.getElementById('interpretation').textContent = interpretation;
+
+    // Update contributing factors
+    const factors = [
+        `Cancer Type Detected: ${cancerType}`,
+        `Detection Confidence: ${(cancerConfidence * 100).toFixed(0)}%`,
+        `High Risk Probability: ${(highRiskProb * 100).toFixed(0)}%`,
+        `Low Risk Probability: ${(lowRiskProb * 100).toFixed(0)}%`
+    ];
+    
+    if (predictions.drug_result?.top_drugs?.length > 0) {
+        factors.push(`${predictions.drug_result.top_drugs.length} personalized drug recommendations available`);
+    }
+    
+    const signalsList = document.getElementById('signalsList');
+    signalsList.innerHTML = factors.map(signal => `<li>${signal}</li>`).join('');
+
+    // Hide workflow and show results
+    document.getElementById('workflowStatus').classList.remove('show');
+    document.getElementById('resultCard').classList.add('show');
+    
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function downloadReport() {
+    const results = localStorage.getItem('predictionResults');
+    if (!results) {
+        alert('No prediction results available to download.');
+        return;
+    }
+    
+    // Redirect to patient reports page which will show detailed results
+    window.location.href = '/patient_reports';
+}
+
+function contactClinician() {
+    alert('Connecting you with your healthcare provider...\n\nYour results will be shared securely with your clinician.\n\nYou can expect a response within 24-48 hours.');
+}
+
+        function resetForm() {
+            selectedFile = null;
+            document.getElementById('filePreview').classList.remove('show');
+            document.getElementById('resultCard').classList.remove('show');
+            document.getElementById('workflowStatus').classList.remove('show');
+            document.getElementById('age').value = '';
+            document.getElementById('sex').value = '';
+            document.getElementById('symptoms').value = '';
+            document.getElementById('lastCheckup').value = '';
+            document.getElementById('consentCheckbox').checked = false;
+            fileInput.value = '';
+            
+            ['step1', 'step2', 'step3'].forEach(id => {
+                document.getElementById(id).classList.remove('active', 'completed');
+            });
+            
+            checkFormValidity();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>

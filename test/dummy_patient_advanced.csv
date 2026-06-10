@@ -1,0 +1,2 @@
+patient_id,name,age,gender,scenario,tumor_stage,tumor_size_cm,notes
+C001,Advanced,56,M,KNOWN_CANCER,Stage III,5.4,"Large tumor, weight loss, loss of appetite, fatigue"

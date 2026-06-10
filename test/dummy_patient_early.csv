@@ -1,0 +1,2 @@
+patient_id,name,age,gender,scenario,tumor_stage,tumor_size_cm,notes
+E001,EarlyCheck,38,F,EARLY_SCREEN,Unknown,0.0,"Mild cough, occasional tiredness, came for routine screening"

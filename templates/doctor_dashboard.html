@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - GeneCure AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 212, 255, 0.2);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+
+        .menu-item {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .menu-item i {
+            font-size: 1.2rem;
+            width: 25px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        /* Top Bar */
+        .topbar {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .topbar h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #ddd;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+            border-color: #00d4ff;
+        }
+
+        .stat-card:hover::before {
+            top: -100%;
+            right: -100%;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: #00d4ff;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #aaa;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Recent Activity Table */
+        .activity-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .activity-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .activity-table thead {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .activity-table th {
+            padding: 1rem;
+            text-align: left;
+            color: #00d4ff;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .activity-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ddd;
+        }
+
+        .activity-table tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+            border: 1px solid rgba(255, 152, 0, 0.5);
+        }
+
+        .status-alert {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 1100;
+            background: linear-gradient(45deg, #00d4ff, #9c27b0);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .menu-toggle i {
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .topbar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .activity-table {
+                font-size: 0.85rem;
+            }
+
+            .activity-table th,
+            .activity-table td {
+                padding: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>GeneCure AI</h2>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('doctor_dashboard') }}" class="menu-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('patients') }}" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Patients</span>
+                </a>
+                <a href="{{ url_for('reports') }}" class="menu-item">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="{{ url_for('variant_explorer') }}" class="menu-item">
+                    <i class="fas fa-dna"></i>
+                    <span>Variant Explorer</span>
+                </a>
+                <a href="{{ url_for('logout') }}" class="menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="topbar">
+                <h1>Doctor Dashboard</h1>
+                <div class="user-info">
+                    <div class="user-avatar">{{ session.name[0] if session.name else 'D' }}</div>
+                    <div class="user-name">{{ session.name or 'Doctor' }}</div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <i class="fas fa-users stat-icon"></i>
+        <div class="stat-number">{{ total_patients }}</div>
+        <div class="stat-label">Total Patients</div>
+    </div>
+
+    <div class="stat-card">
+        <i class="fas fa-chart-line stat-icon"></i>
+        <div class="stat-number">{{ total_predictions }}</div>
+        <div class="stat-label">Predictions Made</div>
+    </div>
+
+    <div class="stat-card">
+        <i class="fas fa-exclamation-triangle stat-icon"></i>
+        <div class="stat-number">{{ active_alerts }}</div>
+        <div class="stat-label">Active Alerts</div>
+    </div>
+
+</div>
+
+
+
+            <!-- Recent Activity -->
+            <div class="activity-section">
+                <h2>Recent Activity</h2>
+                <table class="activity-table">
+                    <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Patient Name</th>
+                            <th>Test Type</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                   <tbody>
+    {% for a in recent_activities %}
+    <tr>
+        <td>{{ a.patient_id }}</td>
+        <td>{{ a.patient_name }}</td>
+        <td>{{ a.test_type }}</td>
+        <td>{{ a.date }}</td>
+        <td><span class="status-badge status-{{ a.status_class }}">{{ a.status_label }}</span></td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
