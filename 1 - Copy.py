@@ -22,7 +22,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "your-secret-key-change-this-in-production"
 app.config[
     "MONGO_URI"
-] = "mongodb+srv://sammyashetty16_db_user:Sammya29@cluster0.kqipwog.mongodb.net/genecure_db"
+] = ""
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=2)
 
 mongo = PyMongo(app)
