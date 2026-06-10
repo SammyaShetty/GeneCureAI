@@ -57,7 +57,7 @@ app.config["SECRET_KEY"] = "your-secret-key-change-this-in-production"
 # 2. Click "Connect" on your cluster
 # 3. Choose "Connect your application"
 # 4. Copy the connection string and replace below
-MONGO_URI = "mongodb+srv://sammyashetty16_db_user:Sammya29@cluster0.nm9lv0a.mongodb.net/genecure_db"
+MONGO_URI = ""
 
 # Option 2: Local MongoDB (if Atlas doesn't work)
 # Uncomment below and comment out the Atlas URI above
